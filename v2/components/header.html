@@ -1,0 +1,50 @@
+<html>
+    <head>
+        <style>
+			body {
+				background-color: #444;
+				color: white;
+				font-family: sans-serif;
+			}
+            .selected {
+				font-weight: bold;
+			}
+			.playlist-item {
+				cursor: pointer;
+			}
+        </style>
+    </head>
+    <body>
+        <p>Inaudible:</p>
+		<div style="display:flex; justify-content:space-evenly;">
+			<input type="range" max="-0.5" min="-160" oninput="inaudible = this.value" value="-60.0" step="any">
+		</div>
+		<p>Width and Height:</p>
+		<div style="display:flex; justify-content:space-evenly;">
+			<input type="range" max="700" min="200" oninput="canvas.width = this.value" value="400">
+			<input type="range" max="500" min="50" oninput="canvas.height = this.value" value="100">
+		</div>
+		<p>Spacing:</p>
+		<div style="display:flex; justify-content:space-evenly;">
+			<input type="range" max="1" min="0" oninput="spacing = this.value" value="0.5" step="any">
+		</div>
+		<p>Data Limit:</p>
+		<p><small>Changing this means the audio won't line up, but you can test how a different number of samples would display.</small></p>
+		<div style="display:flex; justify-content:space-evenly;">
+			<input type="range" max="200" min="1" oninput="truncateData(value)" value="200">
+		</div>
+		<p>Colours:</p>
+		<div style="display:flex; justify-content:space-evenly;">
+			<div><small>Played: </small><input type="color" value="#ff0000" oninput="colPlayed = this.value"></div>
+			<div><small>Played Highlight: </small><input type="color" value="#dd0000" oninput="colPlayedHighlight = this.value"></div>
+			<div><small>Remaining: </small><input type="color" value="#ffffff" oninput="colRemaining = this.value"></div>
+			<div><small>Remaining Highlight: </small><input type="color" value="#dddddd" oninput="colRemainingHighlight = this.value"></div>
+		</div>
+		<div class="player">
+			<p id="testplaypause" onclick="togglePlayback()" style="text-align:center; font-size:2.5em; user-select:none; cursor:pointer;"></p>
+			<canvas id="testcanvas" style="margin: 0 auto; display: block;"></canvas>
+			<audio id="testaudio">
+				<source type="audio/mpeg" src="">
+			</audio>
+			<p>Playlist:</p>
+			<ol>
