@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+
+	<style type="text/css">
+		body {
+			background: #444;
+			color: white;
+			margin: 0;
+			font-family: 'Open Sans', sans-serif;
+		}
+		audio {
+			-webkit-appearance:none;
+		}
+		audio::-webkit-media-controls-timeline {
+			width: 100px;
+		}
+		.slider {
+			-webkit-appearance: none;
+			appearance: none;
+			width: 100%;
+			height: 100%;
+			background: none;
+			outline: none;
+			position: relative;
+			margin: 0;
+			padding: 0;
+			/*background: -webkit-linear-gradient(left, orange 0%, orange 50%, white 50%);*/
+			mix-blend-mode: multiply;
+		}
+		.slider::-webkit-slider-thumb {
+			-webkit-appearance: none;
+			appearance: none;
+			background-color: black;
+			width: 1px;
+			visibility: hidden;
+			height: 100%;
+		}
+		.slider::-ms-fill-lower {
+			-webkit-appearance: none;
+			appearance: none;
+			background-color: green;
+		}
+		.waveform {
+			margin: 0;
+			padding: 0;
+			isolation: isolate;
+			left: 120px;
+			width: 640px;
+			height: 64px;
+			background-repeat: no-repeat;
+			display: block;
+			position: absolute;
+			top: 28px;
+		}
+		.item {
+			height: 90px;
+			position: relative;
+		}
+		.play_toggle {
+			font-size: 64px;
+			display: block;
+			cursor: pointer;
+			position: absolute;
+			top: 10px;
+			left: 32px;
+			user-select: none;
+		}
+		#center {
+			margin: 0 auto;
+			width: 800px;
+			background-color: black;
+			padding: 16px 32px;
+		}
+	</style>
+
+	<script type="text/javascript">
+		// play and pause unicode
+		const pause_text = "&#9208;"
+		const play_text = "&#9205;"
+
+		let playing_element = null
+		let playing_status = null
+
+		function toggle_playback(audio_element, status_indicator) {
+			if (playing_element == audio_element) {
+				if (audio_element.paused) {
+					audio_element.play()
+					playing_element = audio_element
+					playing_status = status_indicator
+					status_indicator.innerHTML = pause_text
+					status_indicator.style.color = 'orange'
+				} else {
+					audio_element.pause()
+					status_indicator.innerHTML = play_text
+					status_indicator.style.color = ''
+					playing_element = null
+					playing_status = null
+				}
+			} else {
+				if (playing_element != null) {
+					playing_element.pause()
+					playing_status.innerHTML = play_text
+					playing_status.style.color = ''
+					playing_element = null
+					playing_status = null
+				} 
+				audio_element.play()
+				playing_element = audio_element
+				playing_status = status_indicator
+				status_indicator.innerHTML = pause_text
+				status_indicator.style.color = 'orange'
+			}
+		}
+
+		function seek(audio_element, status_indicator, value) {
+			let is_playing = !(audio_element.paused) 
+			if (is_playing) {
+				toggle_playback(audio_element, status_indicator)
+			}
+			let buffer = audio_element.ontimeupdate
+			audio_element.ontimeupdate = ""
+			audio_element.currentTime = value * audio_element.duration
+			audio_element.ontimeupdate = buffer
+
+			if (is_playing) {
+				toggle_playback(audio_element, status_indicator)
+			}
+		}
+
+		function time_update(audio_element, tracker) {
+			let prev_time = tracker.value * audio_element.duration
+			let new_time = audio_element.currentTime
+			let difference = new_time - prev_time
+			if (Math.abs(difference) <= 0.5) {
+				tracker.value = new_time / audio_element.duration
+				tracker.setAttribute('style', 'background: -webkit-linear-gradient(left, orange 0%, orange ' + (tracker.value * 100) + '%, white ' + (tracker.value * 100) + '%);')
+			}
+			if (audio_element.ended) {
+				audio_element.currentTime = 0.0
+				tracker.value = 0.0
+				tracker.setAttribute('style', 'background: -webkit-linear-gradient(left, orange 0%, orange ' + (tracker.value * 100) + '%, white ' + (tracker.value * 100) + '%);')
+				toggle_playback(playing_element, playing_status)
+			}
+		}
+	</script>
+</head>
+<body>
+	<div id="center"><div class="item">
+	<p>
+		<span class="name">Fur Elise</span>
+	</p>
+	<div>
+		<span class="play_toggle" id="status_Fur Elise" onclick="toggle_playback(document.getElementById('Fur Elise'), this);">&#9205;</span>
+		<div class="waveform" style="background-image: url('assets/images/Fur Elise.png');">
+			<input class="slider" type="range" min=0 max=1 step="any" value=0 id="Fur Elise_tracker" onchange="seek(document.getElementById('Fur Elise'), document.getElementById('status_Fur Elise'), this.value)">
+		</div>
+	</div>
+	<audio id="Fur Elise" class="audio_file" ontimeupdate="time_update(this, document.getElementById('Fur Elise_tracker'))">
+		<source src="assets/audio/Fur Elise.mp3" type="audio/mpeg">
+	</audio>
+</div><div class="item">
+	<p>
+		<span class="name">Gymnopedie No</span>
+	</p>
+	<div>
+		<span class="play_toggle" id="status_Gymnopedie No" onclick="toggle_playback(document.getElementById('Gymnopedie No'), this);">&#9205;</span>
+		<div class="waveform" style="background-image: url('assets/images/Gymnopedie No.png');">
+			<input class="slider" type="range" min=0 max=1 step="any" value=0 id="Gymnopedie No_tracker" onchange="seek(document.getElementById('Gymnopedie No'), document.getElementById('status_Gymnopedie No'), this.value)">
+		</div>
+	</div>
+	<audio id="Gymnopedie No" class="audio_file" ontimeupdate="time_update(this, document.getElementById('Gymnopedie No_tracker'))">
+		<source src="assets/audio/Gymnopedie No.mp3" type="audio/mpeg">
+	</audio>
+</div><div class="item">
+	<p>
+		<span class="name">Moonlight Sonata</span>
+	</p>
+	<div>
+		<span class="play_toggle" id="status_Moonlight Sonata" onclick="toggle_playback(document.getElementById('Moonlight Sonata'), this);">&#9205;</span>
+		<div class="waveform" style="background-image: url('assets/images/Moonlight Sonata.png');">
+			<input class="slider" type="range" min=0 max=1 step="any" value=0 id="Moonlight Sonata_tracker" onchange="seek(document.getElementById('Moonlight Sonata'), document.getElementById('status_Moonlight Sonata'), this.value)">
+		</div>
+	</div>
+	<audio id="Moonlight Sonata" class="audio_file" ontimeupdate="time_update(this, document.getElementById('Moonlight Sonata_tracker'))">
+		<source src="assets/audio/Moonlight Sonata.mp3" type="audio/mpeg">
+	</audio>
+</div></div>
+</body>
+</html>
