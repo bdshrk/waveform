@@ -1,0 +1,14 @@
+<div class="item">
+	<p>
+		<span class="name">FILENAME</span>
+	</p>
+	<div>
+		<span class="play_toggle" id="status_FILENAME" onclick="toggle_playback(document.getElementById('FILENAME'), this);">&#9205;</span>
+		<div class="waveform" style="background-image: url('assets/images/FILENAME.png');">
+			<input class="slider" type="range" min=0 max=1 step="any" value=0 id="FILENAME_tracker" onchange="seek(document.getElementById('FILENAME'), document.getElementById('status_FILENAME'), this.value)">
+		</div>
+	</div>
+	<audio id="FILENAME" class="audio_file" ontimeupdate="time_update(this, document.getElementById('FILENAME_tracker'))">
+		<source src="assets/audio/FILENAME.mp3" type="audio/mpeg">
+	</audio>
+</div>
